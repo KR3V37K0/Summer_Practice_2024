@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class ButtonsSC : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] GameObject[] panels;
 
-    // Update is called once per frame
-    void Update()
+
+    public void btn_OpenOnlyOne(int n)
     {
-        
+        foreach(GameObject p in panels)
+        {
+            p.SetActive(false);
+        }
+        panels[n].SetActive(true);
     }
 }

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2ef44f4c4ebc08b45afbf43a77d71ee6
+guid: 4b4b6f3156f311749a56b53eb2cacce6
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -66,12 +66,6 @@ PluginImporter:
       enabled: 1
       settings:
         CPU: x86_64
-  - first:
-      Windows Store Apps: WindowsStoreApps
-    second:
-      enabled: 0
-      settings:
-        CPU: AnyCPU
   - first:
       iPhone: iOS
     second:
