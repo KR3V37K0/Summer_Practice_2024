@@ -7,8 +7,31 @@ public class ButtonsSC : MonoBehaviour
 {
     [SerializeField] ScriptManager ScManager;
     [SerializeField] GameObject[] panels;
-    [SerializeField] GameObject reg_log;
+    [SerializeField] GameObject reg_log, navigation,loadScreen;
 
+    private void Start()
+    {
+       StartCoroutine(StartScreen());
+    }
+    public IEnumerator StartScreen()
+    {
+        loadScreen.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        if (ScManager.User.Phone == null) { 
+            
+            btn_OpenOnlyOne(1);
+            panels[1].SetActive(false);
+            reg_log.SetActive(true);
+            reg_log.transform.Find("__LOGIN").gameObject.SetActive(true);
+            reg_log.transform.Find("__REGISTRATION").gameObject.SetActive(false);    
+        }
+        loadScreen.SetActive(false);
+    }
+    public void btn_UserExit()
+    {
+        ClearUser();
+        StartCoroutine(StartScreen());
+    }
     public void btn_OpenOnlyOne(int n)
     {
         foreach(GameObject p in panels)
@@ -31,8 +54,9 @@ public class ButtonsSC : MonoBehaviour
         string pass = reg_log.transform.Find("__LOGIN/input_PASS").gameObject.GetComponent<TMP_InputField>().text;
 
         ScManager.DataBase.FindUser(phone);
+        //if()reg_log.transform.Find("__LOGIN/text_Message").gameObject.GetComponent<TMP_Text>().text = "Неверный логин";
 
-        if(ScManager.User.id == 0) 
+        if (ScManager.User.id == 0) 
         {
             reg_log.transform.Find("__LOGIN/text_Message").gameObject.GetComponent<TMP_Text>().text = "Неверный логин";
             ClearUser();
@@ -41,8 +65,10 @@ public class ButtonsSC : MonoBehaviour
         {
             if (ScManager.User.Pass == pass)
             {
-                reg_log.transform.Find("__LOGIN/text_Message").gameObject.GetComponent<TMP_Text>().text = "";
+                reg_log.transform.Find("__LOGIN/text_Message").gameObject.GetComponent<TMP_Text>().text = "Успех";
                 Debug.Log("вошел как " + ScManager.User.Name);
+                ScManager.User.SaveUser();
+                ScManager.User.CompleteEnter();
 
                 //----------------------------------------------------ЗДЕСЬ ПРОДОЛЖИТЬ ВХОД
             }
@@ -61,9 +87,16 @@ public class ButtonsSC : MonoBehaviour
         if (ScManager.User.id != 0) reg_log.transform.Find("__REGISTRATION/text_Message").gameObject.GetComponent<TMP_Text>().text = "Аккаунт с этим телефоном уже существует";
         else
         {
-            reg_log.transform.Find("__REGISTRATION/text_Message").gameObject.GetComponent<TMP_Text>().text = "";
+            reg_log.transform.Find("__LOGIN/text_Message").gameObject.GetComponent<TMP_Text>().text = "Успех";
             ScManager.DataBase.WriteUser(_name, phone, pass);
+            ScManager.User.CompleteEnter();
             //----------------------------------------------------ЗДЕСЬ ПРОДОЛЖИТЬ ВХОД
         }
+    }
+    public void btn_menuUSER()
+    {
+        reg_log.SetActive(false);
+        btn_OpenOnlyOne(4);
+        navigation.SetActive(true);
     }
 }

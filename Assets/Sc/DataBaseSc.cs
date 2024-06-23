@@ -3,6 +3,7 @@ using System.Data;
 using Mono.Data;
 using Mono.Data.Sqlite;
 using System.IO;
+using System.EnterpriseServices;
 
 public class DataBaseSc : MonoBehaviour
 {
@@ -11,7 +12,10 @@ public class DataBaseSc : MonoBehaviour
     IDbConnection dbconn;
     IDbCommand dbcmd;
     IDataReader reader;
-
+    private void Start()
+    {
+        
+    }
 
     void OpenConnection()
     {
@@ -50,14 +54,35 @@ public class DataBaseSc : MonoBehaviour
         {
             if (reader.GetString(2) != null)
             {
+                dbUser u = new dbUser();
+                /*usersc.id = reader.GetInt32(0);
+                usersc.Name = reader.GetString(1);
+                usersc.Phone = phone;
+                usersc.Pass = reader.GetString(2);
+                usersc.Card = reader.GetString(3);*/
+
                 ScManager.User.id = reader.GetInt32(0);
                 ScManager.User.Name = reader.GetString(1);
                 ScManager.User.Phone = phone;
                 ScManager.User.Pass = reader.GetString(2);
                 ScManager.User.Card = reader.GetString(3);
+
+                /*u.id = reader.GetInt32(0);
+                u.Name = reader.GetString(1);
+                u.Phone = phone;
+                u.Pass = reader.GetString(2);
+                u.Card = reader.GetString(3);*/
             }
         }
         CloseConnection();
     }
-
+    public class dbUser
+    {
+        public int id;
+        public string Name;
+        public string Phone;
+        public string Pass;
+        public string Card;
+    }
 }
+
