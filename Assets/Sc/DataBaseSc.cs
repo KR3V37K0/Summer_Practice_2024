@@ -4,6 +4,8 @@ using Mono.Data;
 using Mono.Data.Sqlite;
 using System.IO;
 using System.EnterpriseServices;
+using static Unity.Burst.Intrinsics.X86;
+using System.Xml.Linq;
 
 public class DataBaseSc : MonoBehaviour
 {
@@ -12,11 +14,6 @@ public class DataBaseSc : MonoBehaviour
     IDbConnection dbconn;
     IDbCommand dbcmd;
     IDataReader reader;
-    private void Start()
-    {
-        
-    }
-
     void OpenConnection()
     {
         dbconn = new SqliteConnection(conn);
@@ -32,12 +29,12 @@ public class DataBaseSc : MonoBehaviour
         dbconn.Close();
         dbconn = null;
     }
-    public void WriteUser(string Name, string Phone, string Password)//string LastName,string FirstName,string Phone,string Password
+    public void WriteUser(string Name, string Phone, string Password,string Card,int Ava,int A)
     {
         OpenConnection();
 
-        string sqlQuery = "Insert into Users(Name,Phone,Password) "+
-                            "Values('" + Name + "','" + Phone + "','" + Password + "')";
+        string sqlQuery = "Insert into Users(Name,Phone,Password,Card,idAvatar,A) "+
+                            "Values('" + Name + "','" + Phone + "','" + Password + "','"+Card+ "','" + Ava + "','" + A+"')";
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
         while (reader.Read()){       }
@@ -47,31 +44,23 @@ public class DataBaseSc : MonoBehaviour
     public void FindUser(string phone)
     {     
         OpenConnection();
-        string sqlQuery="Select id,Name,Password,Card FROM Users Where Phone='"+phone+"'";
+        string sqlQuery="Select id,Name,Password,Card,idAvatar,A FROM Users Where Phone='"+phone+"'";
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
         while (reader.Read()) 
         {
-            if (reader.GetString(2) != null)
+            if (reader.GetInt32(0)>0)
             {
                 dbUser u = new dbUser();
-                /*usersc.id = reader.GetInt32(0);
-                usersc.Name = reader.GetString(1);
-                usersc.Phone = phone;
-                usersc.Pass = reader.GetString(2);
-                usersc.Card = reader.GetString(3);*/
 
                 ScManager.User.id = reader.GetInt32(0);
                 ScManager.User.Name = reader.GetString(1);
                 ScManager.User.Phone = phone;
                 ScManager.User.Pass = reader.GetString(2);
                 ScManager.User.Card = reader.GetString(3);
+                ScManager.User.Ava = reader.GetInt32(4);
+                ScManager.User.A = reader.GetInt32(5);
 
-                /*u.id = reader.GetInt32(0);
-                u.Name = reader.GetString(1);
-                u.Phone = phone;
-                u.Pass = reader.GetString(2);
-                u.Card = reader.GetString(3);*/
             }
         }
         CloseConnection();
@@ -83,6 +72,8 @@ public class DataBaseSc : MonoBehaviour
         public string Phone;
         public string Pass;
         public string Card;
+        public int Ava;
+        public int A;
     }
 }
 

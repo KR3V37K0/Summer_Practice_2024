@@ -7,4 +7,5 @@ public class ScriptManager : MonoBehaviour
     public UserControllSC User;
     public DataBaseSc DataBase;
     public ButtonsSC Buttons;
+    public MenusLoaderSC Menu;
 }

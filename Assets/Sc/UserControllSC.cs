@@ -12,6 +12,8 @@ public class UserControllSC : MonoBehaviour
     public string Phone;
     public string Pass;
     public string Card;
+    public int Ava;
+    public int A;
     string UserFile = Application.dataPath + "/user/UserFile.txt";
 
     private void Start()
@@ -23,22 +25,19 @@ public class UserControllSC : MonoBehaviour
     }
     public IEnumerator Check()
     {
+
         for(int x = 0; x < 100; x++) 
-        { 
+        {
             yield return new WaitForSeconds(1f);
-            LoadUser();
-            if(Phone!=null)break;
-            Debug.Log(id + Name + Phone + Pass + Card);
+            if (Phone != null) { ScManager.DataBase.FindUser(Phone); break; }
+            
         }
         ScManager.Buttons.btn_menuUSER();
 ;
     }
     public void CompleteEnter()
     {
-        Debug.Log("COMPLETE");
-        Debug.Log(id + Name + Phone + Pass + Card);
         StartCoroutine(Check());
-
     }
     public void SaveUser()
     {
@@ -49,6 +48,8 @@ public class UserControllSC : MonoBehaviour
         sw.WriteLine(Phone);
         sw.WriteLine(Pass);
         sw.WriteLine(Card);
+        sw.WriteLine(Ava);
+        sw.WriteLine(A);
         sw.Close();
     }
     public void LoadUser()
@@ -59,6 +60,8 @@ public class UserControllSC : MonoBehaviour
         Phone = sr.ReadLine();
         Pass = sr.ReadLine();
         Card = sr.ReadLine();
+        Ava = int.Parse(sr.ReadLine());
+        A = int.Parse(sr.ReadLine());
         sr.Close();
 
     }

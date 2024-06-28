@@ -11,7 +11,7 @@ using System.IO;
             string conn = "";
 #if UNITY_EDITOR
             conn = "URI=file:" + Application.dataPath + "\\StreamingAssets" + "/"+ DataBaseName; //Path to database
-            Debug.Log("Windows Mode");
+            //Debug.Log("Windows Mode");
 
 #elif UNITY_ANDROID
             conn = "URI=file:" + Application.persistentDataPath + "/" + DataBaseName; //Path to database.
