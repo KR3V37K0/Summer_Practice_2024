@@ -18,9 +18,11 @@ public class MenusLoaderSC : MonoBehaviour
     {
         return Resources.Load<Sprite>("Avatars/" + id);
     }
-    public void menuUser()
+    public void menuUser(Transform canvas)
     {
-        txt_Name.text = scmanager.User.Name;
+        //txt_Name.text = scmanager.User.Name;
+        canvas.Find("text_Name").GetComponent<TMP_Text>().text= scmanager.User.Name;
+        canvas.Find("btn_Avatar/Image").GetComponent<Image>().sprite = FindAva(scmanager.User.Ava);
     }
     public void menuSettings(Transform content)
     {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class ButtonsSC : MonoBehaviour
 {
@@ -102,8 +102,9 @@ public class ButtonsSC : MonoBehaviour
         {
             reg_log.transform.Find("__LOGIN/text_Message").gameObject.GetComponent<TMP_Text>().text = "Успех";
             ScManager.DataBase.WriteUser(_name, phone, pass,"",0,0);
-            ScManager.User.CompleteEnter();
-            //----------------------------------------------------ЗДЕСЬ ПРОДОЛЖИТЬ ВХОД
+            
+            reg_log.transform.Find("__LOGIN").gameObject.SetActive(true);
+            reg_log.transform.Find("__REGISTRATION").gameObject.SetActive(false);
         }
     }
     public void btn_menuUSER()
@@ -111,22 +112,47 @@ public class ButtonsSC : MonoBehaviour
         reg_log.SetActive(false);
         btn_OpenOnlyOne(4);
         navigation.SetActive(true);
-        ScManager.Menu.menuUser();
+        ScManager.Menu.menuUser(panels[4].GetComponent<Transform>());
     }
 
 
     //USER SETTINGS
+    [SerializeField] Transform content;
     public void btn_Settings()
     {
-        ScManager.Menu.menuSettings(panels[6].transform.Find("Scroll View/Viewport/Content"));
+        content = panels[6].transform.Find("Scroll View/Viewport/Content");
+        ScManager.Menu.menuSettings(content);
     }
     public void btn_SaveSettings()
     {
-        
+        ScManager.User.Name = content.Find("input_Name").GetComponent<TMP_InputField>().text;
+        ScManager.User.Phone = content.Find("input_Phone").GetComponent<TMP_InputField>().text;
+        ScManager.User.Ava = int.Parse(content.Find("Avatar/Image").GetComponent<Image>().sprite.name);
+        ScManager.User.SaveUser();
+        ScManager.DataBase.ChangeUserData(ScManager.User.id, ScManager.User.Name, ScManager.User.Ava, ScManager.User.Phone);
+        btn_menuUSER();
+
+        navigation.SetActive(true);
+        panels[6].SetActive(false);
     }
     public void btn_ChangePass()
     {
+        string oldPass = content.Find("txt_Pass/input_oldPass").GetComponent<TMP_InputField>().text;
+        string newPass = content.Find("txt_Pass/input_newPass").GetComponent<TMP_InputField>().text;
+        string retryPass = content.Find("txt_Pass/input_retryPass").GetComponent<TMP_InputField>().text;
 
+        if (oldPass == ScManager.User.Pass)
+        {
+            if (newPass == retryPass)
+            {
+                content.Find("txt_Pass/txt_Message").GetComponent<TMP_Text>().text = " ";
+                ScManager.User.Pass = newPass;
+                ScManager.User.SaveUser();
+                ScManager.DataBase.ChangeUserPass(ScManager.User.id,newPass);
+            }
+            else content.Find("txt_Pass/txt_Message").GetComponent<TMP_Text>().text = "Пароль повторен неверно";
+        }
+        else content.Find("txt_Pass/txt_Message").GetComponent<TMP_Text>().text = "Старый пароль неверный";
     }
     public void btn_ChangeAva()
     {
@@ -138,7 +164,9 @@ public class ButtonsSC : MonoBehaviour
     }
     public void btn_DeleteAcc()
     {
-
+        ScManager.DataBase.DeleteUser(ScManager.User.id);   
+        ClearUser();
+        StartCoroutine(StartScreen());
     }
 
 

@@ -65,6 +65,40 @@ public class DataBaseSc : MonoBehaviour
         }
         CloseConnection();
     }
+    public void ChangeUserPass(int id,string newPass)
+    {
+        OpenConnection();
+
+        string sqlQuery = "UPDATE Users SET Password = '"+newPass+"' WHERE id = '"+id+"'";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        while (reader.Read()) { }
+
+        CloseConnection();
+    }
+    public void ChangeUserData(int id, string Name, int Ava, string Phone)
+    {
+        OpenConnection();
+
+        string sqlQuery = "UPDATE Users SET Name = '" + Name + "', idAvatar = '" + Ava + "', Phone = '" + Phone + "' WHERE id = '" + id + "'";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        while (reader.Read()) { }
+
+        CloseConnection();
+    }
+    public void DeleteUser(int id)
+    {
+        OpenConnection();
+
+        string sqlQuery = "DELETE FROM Users WHERE id='"+id+"'";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        while (reader.Read()) { }
+
+        CloseConnection();
+    }
+
     public class dbUser
     {
         public int id;
