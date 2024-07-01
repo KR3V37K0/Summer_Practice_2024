@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
+using UnityEngine.Networking;
+
 
 public class UserControllSC : MonoBehaviour
 {
@@ -14,10 +16,21 @@ public class UserControllSC : MonoBehaviour
     public string Card;
     public int Ava;
     public int A;
-    string UserFile = Application.dataPath + "/user/UserFile.txt";
+    string UserFile;
+
 
     private void Start()
     {
+#if UNITY_ANDROID
+
+        UserFile = Application.persistentDataPath + "/UserFile.txt";
+
+#endif
+#if UNITY_EDITOR
+        UserFile = Application.dataPath + "/user/UserFile.txt";
+#endif
+
+
         if (!(File.Exists(UserFile))) { var f =File.Create(UserFile); f.Close(); }
 
         if (CheckByPhone()) { CompleteEnter(); }

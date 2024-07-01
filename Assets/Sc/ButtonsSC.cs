@@ -7,13 +7,14 @@ using UnityEngine.UI;
 public class ButtonsSC : MonoBehaviour
 {
     [SerializeField] ScriptManager ScManager;
-    [SerializeField] GameObject[] panels;
+    public GameObject[] panels;
     [SerializeField] GameObject reg_log, navigation,loadScreen;
 
 
     private void Start()
     {
-       StartCoroutine(StartScreen());
+        
+        StartCoroutine(StartScreen());
     }
     //FOR ALL
     public IEnumerator StartScreen()
@@ -154,11 +155,11 @@ public class ButtonsSC : MonoBehaviour
         }
         else content.Find("txt_Pass/txt_Message").GetComponent<TMP_Text>().text = "Старый пароль неверный";
     }
-    public void btn_ChangeAva()
+    public void btn_ChangeAva() //empty
     {
 
     }
-    public void btn_DeleteAva()
+    public void btn_DeleteAva()//empty
     {
 
     }
@@ -169,5 +170,19 @@ public class ButtonsSC : MonoBehaviour
         StartCoroutine(StartScreen());
     }
 
+
+    //HOME
+    public void btn_menuHOME()
+    {
+        if (panels[0].activeSelf==true) panels[0].transform.Find("scroll_Book").gameObject.SetActive(false);
+        ScManager.Menu.menuHome();
+        
+
+    }
+    public void btn_BookOpen(int id)
+    {
+        panels[0].transform.Find("scroll_Book").gameObject.SetActive(true);
+        ScManager.Menu.OpenBook(id);
+    }
 
 }
