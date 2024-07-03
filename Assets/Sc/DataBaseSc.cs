@@ -6,6 +6,7 @@ using System.IO;
 using System.EnterpriseServices;
 using static Unity.Burst.Intrinsics.X86;
 using System.Xml.Linq;
+using System.Collections.Generic;
 
 public class DataBaseSc : MonoBehaviour
 {
@@ -171,7 +172,61 @@ public class DataBaseSc : MonoBehaviour
         return b;
     }
 
+    //LIKE
+    public List<int> GetAllLikedID(int idUser)
+    {
+        List<int> books = new List<int>();
+        OpenConnection();
+        string sqlQuery = "Select idBook FROM Liked Where idUser='" + idUser+"'";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
 
+        while (reader.Read())
+        {
+            if (reader.GetInt32(0) > 0)
+            {
+
+               books.Add(reader.GetInt32(0));
+            }
+        }
+        CloseConnection();
+        return books;
+    }
+    public bool BookIsLike(int idBook,int idUser)
+    {
+        OpenConnection();
+        string sqlQuery = "Select idBook,id User FROM Liked Where idUser='" + idUser + "'";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        while (reader.Read())
+        {
+            if (reader.GetInt32(0) > 0)
+            {
+                if (reader.GetInt32(0) == idBook) { CloseConnection(); return true; }
+            }
+        }
+        CloseConnection();
+        return false;
+    }
+    public void AddBookToLiked(int idBook,int idUser)
+    {
+        OpenConnection();
+        string sqlQuery = "INSERT INTO Liked(idBook, idUser) VALUES("+idBook+","+idUser+")";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        while (reader.Read()) { }
+        CloseConnection();
+    }
+    public void DeleteBookFromLiked(int idBook, int idUser)
+    {
+        OpenConnection();
+
+        string sqlQuery = "DELETE FROM Liked WHERE idBook=" + idBook + " AND idUser="+idUser;
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        while (reader.Read()) { }
+        CloseConnection();
+    }
 
 }
 public class dbUser

@@ -9,6 +9,7 @@ public class ButtonsSC : MonoBehaviour
     [SerializeField] ScriptManager ScManager;
     public GameObject[] panels;
     [SerializeField] GameObject reg_log, navigation,loadScreen;
+    public Color colorLike, colorUnlike;
 
 
     private void Start()
@@ -181,8 +182,46 @@ public class ButtonsSC : MonoBehaviour
     }
     public void btn_BookOpen(int id)
     {
+        btn_OpenOnlyOne(0);
         panels[0].transform.Find("scroll_Book").gameObject.SetActive(true);
         ScManager.Menu.OpenBook(id);
     }
+    //BOOK VIEW
+    public void btn_Like(GameObject but)
+    {
+        if (but.transform.GetComponent<Image>().color == colorLike)
+        {
+            but.transform.GetComponent<Image>().color = colorUnlike;
+            ScManager.DataBase.DeleteBookFromLiked(ScManager.Menu.book.id, ScManager.User.id);
+        }
+        else
+        {
+            but.transform.GetComponent<Image>().color = colorLike;
+            ScManager.DataBase.AddBookToLiked(ScManager.Menu.book.id, ScManager.User.id);          
+        }
+    }
 
+
+    //LIKE
+    public void btn_menuLIKE()
+    {
+        ScManager.Menu.menuLike(panels[1].transform.Find("Scroll View/Viewport/Content").transform);
+    }
+    public void btn_Like(GameObject but,int idBook)
+    {
+        if (but.transform.GetComponent<Image>().color == colorLike)
+        {
+            but.transform.GetComponent<Image>().color = colorUnlike;
+            ScManager.DataBase.DeleteBookFromLiked(idBook, ScManager.User.id);
+        }
+        else
+        {
+            but.transform.GetComponent<Image>().color = colorLike;
+            ScManager.DataBase.AddBookToLiked(idBook, ScManager.User.id);
+        }
+    }
+    public void btn_toBusket(int idBook)
+    {
+
+    }
 }
