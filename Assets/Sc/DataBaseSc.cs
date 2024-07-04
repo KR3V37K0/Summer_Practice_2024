@@ -172,12 +172,14 @@ public class DataBaseSc : MonoBehaviour
         return b;
     }
 
-    //LIKE
-    public List<int> GetAllLikedID(int idUser)
+
+
+    //CHECK ALL
+    public List<int> GetAllID(int idUser,string table)
     {
         List<int> books = new List<int>();
         OpenConnection();
-        string sqlQuery = "Select idBook FROM Liked Where idUser='" + idUser+"'";
+        string sqlQuery = "Select idBook FROM "+table+" Where idUser='" + idUser + "'";
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
 
@@ -186,16 +188,16 @@ public class DataBaseSc : MonoBehaviour
             if (reader.GetInt32(0) > 0)
             {
 
-               books.Add(reader.GetInt32(0));
+                books.Add(reader.GetInt32(0));
             }
         }
         CloseConnection();
         return books;
     }
-    public bool BookIsLike(int idBook,int idUser)
+    public bool BookIs(int idBook, int idUser, string table)
     {
         OpenConnection();
-        string sqlQuery = "Select idBook,id User FROM Liked Where idUser='" + idUser + "'";
+        string sqlQuery = "Select idBook,id User FROM "+table+" Where idUser='" + idUser + "'";
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
         while (reader.Read())
@@ -208,20 +210,20 @@ public class DataBaseSc : MonoBehaviour
         CloseConnection();
         return false;
     }
-    public void AddBookToLiked(int idBook,int idUser)
+    public void AddBookTo(int idBook, int idUser, string table)
     {
         OpenConnection();
-        string sqlQuery = "INSERT INTO Liked(idBook, idUser) VALUES("+idBook+","+idUser+")";
+        string sqlQuery = "INSERT INTO "+table+"(idBook, idUser) VALUES(" + idBook + "," + idUser + ")";
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
         while (reader.Read()) { }
         CloseConnection();
     }
-    public void DeleteBookFromLiked(int idBook, int idUser)
+    public void DeleteBookFrom(int idBook, int idUser,string table)
     {
         OpenConnection();
 
-        string sqlQuery = "DELETE FROM Liked WHERE idBook=" + idBook + " AND idUser="+idUser;
+        string sqlQuery = "DELETE FROM "+table+" WHERE idBook=" + idBook + " AND idUser=" + idUser;
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
         while (reader.Read()) { }

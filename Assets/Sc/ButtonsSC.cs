@@ -192,12 +192,12 @@ public class ButtonsSC : MonoBehaviour
         if (but.transform.GetComponent<Image>().color == colorLike)
         {
             but.transform.GetComponent<Image>().color = colorUnlike;
-            ScManager.DataBase.DeleteBookFromLiked(ScManager.Menu.book.id, ScManager.User.id);
+            ScManager.DataBase.DeleteBookFrom(ScManager.Menu.book.id, ScManager.User.id,"Liked");
         }
         else
         {
             but.transform.GetComponent<Image>().color = colorLike;
-            ScManager.DataBase.AddBookToLiked(ScManager.Menu.book.id, ScManager.User.id);          
+            ScManager.DataBase.AddBookTo(ScManager.Menu.book.id, ScManager.User.id,"Liked");          
         }
     }
 
@@ -212,16 +212,32 @@ public class ButtonsSC : MonoBehaviour
         if (but.transform.GetComponent<Image>().color == colorLike)
         {
             but.transform.GetComponent<Image>().color = colorUnlike;
-            ScManager.DataBase.DeleteBookFromLiked(idBook, ScManager.User.id);
+            ScManager.DataBase.DeleteBookFrom(idBook, ScManager.User.id, "Liked");
         }
         else
         {
             but.transform.GetComponent<Image>().color = colorLike;
-            ScManager.DataBase.AddBookToLiked(idBook, ScManager.User.id);
+            ScManager.DataBase.AddBookTo(idBook, ScManager.User.id,"Liked");
         }
+    }
+
+    //BUSKET
+    public void btn_menuBUSKET()
+    {      
+        ScManager.Menu.menuBusket(panels[2].transform.Find("Scroll View/Viewport/Content").transform);
     }
     public void btn_toBusket(int idBook)
     {
-
+        ScManager.DataBase.AddBookTo(idBook, ScManager.User.id, "Busketed");
+    }
+    public void btn_DeleteFromBusket(int idBook,GameObject panel)
+    {
+        Destroy(panel); 
+        ScManager.DataBase.DeleteBookFrom(idBook, ScManager.User.id, "Busketed");
+        ScManager.Menu.recalculate_Summ();
+    }
+    public void btn_Buy()
+    {
+        Debug.Log("куплено");
     }
 }

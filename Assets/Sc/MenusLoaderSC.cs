@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using UnityEditor;
 
 public class MenusLoaderSC : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class MenusLoaderSC : MonoBehaviour
     //[SerializeField] GameObject btn_Book, scroll_Group;
     [SerializeField] bool booksLoaded = false;
     [SerializeField] int booksTop;
-    [SerializeField] GameObject prefubGroup,prefubBook,prefubLiked;
+    [SerializeField] GameObject prefubGroup,prefubBook,prefubLiked,prefubBusketed;
     [SerializeField] GameObject contentGroups, contentBooks;
     [SerializeField] Transform BookView;
     List<Sprite> images = new List<Sprite>();
@@ -29,6 +30,7 @@ public class MenusLoaderSC : MonoBehaviour
         prefubGroup = Resources.Load<GameObject>("Prefubs/scroll_Group");
         prefubBook = Resources.Load<GameObject>("Prefubs/btn_Book");
         prefubLiked = Resources.Load<GameObject>("Prefubs/panel_LikedBook");
+        prefubBusketed = Resources.Load<GameObject>("Prefubs/panel_BookInBusket");
     }
 
     //USER
@@ -98,8 +100,10 @@ public class MenusLoaderSC : MonoBehaviour
         BookView.Find("txt_ProviderDate").GetComponent<TMP_Text>().text = book.Provider + " " + book.Date;
         BookView.Find("txt_Rating/Img_Rating").GetComponent<Image>().fillAmount = book.Rating / 5f;
         BookView.Find("btn_toBusket/txt_Cost").GetComponent<TMP_Text>().text = "В корзину    " + book.Cost+" руб";
+        BookView.Find("btn_toBusket").GetComponent<Button>().onClick.RemoveAllListeners();
+        BookView.Find("btn_toBusket").GetComponent<Button>().onClick.AddListener(() => { scmanager.Buttons.btn_toBusket(book.id); });
         BookView.Find("txt_Description").GetComponent<TMP_Text>().text = "Описание" + "\n" + book.Description;
-        if (scmanager.DataBase.BookIsLike(book.id, scmanager.User.id))
+        if (scmanager.DataBase.BookIs(book.id, scmanager.User.id,"Liked"))
         {
             BookView.Find("__TOP/btn_Like").GetComponent<Image>().color = scmanager.Buttons.colorLike;
         }
@@ -128,12 +132,14 @@ public class MenusLoaderSC : MonoBehaviour
         {
             if(child.gameObject.name!="Content") Destroy(child.gameObject);
         }
-        List<int>idBook= scmanager.DataBase.GetAllLikedID(scmanager.User.id);
+        List<int>idBook= scmanager.DataBase.GetAllID(scmanager.User.id,"Liked");
         List<dbBook> liked=new List<dbBook>();
         foreach (int i in idBook)
         {
             liked.Add(scmanager.DataBase.FindBook(i));
         }
+        if (liked.Count > 0) scmanager.Buttons.panels[1].transform.Find("txt_None").gameObject.SetActive(false);
+        else scmanager.Buttons.panels[1].transform.Find("txt_None").gameObject.SetActive(true);
         foreach (dbBook book in liked) 
         {
 
@@ -147,7 +153,68 @@ public class MenusLoaderSC : MonoBehaviour
             g.transform.Find("btn_Book").GetComponent<Button>().onClick.AddListener(() => { scmanager.Buttons.btn_BookOpen(book.id); });
             g.transform.Find("btn_toBusket").GetComponent<Button>().onClick.AddListener(() => { scmanager.Buttons.btn_toBusket(book.id); });
             g.transform.Find("btn_Like").GetComponent<Button>().onClick.AddListener(() => { scmanager.Buttons.btn_Like(g.transform.Find("btn_Like").gameObject, book.id); });
+            g.transform.Find("btn_Like").GetComponent<Image>().color = scmanager.Buttons.colorLike;
         }
+    }
+
+    //BUSKET
+    public TMP_Text txt_Summ;
+    public void menuBusket(Transform content)
+    {
+        foreach (Transform child in content.GetComponentInChildren<Transform>())
+        {
+            if (child.gameObject.name != "Content") Destroy(child.gameObject);
+        }
+        List<int> idBook = scmanager.DataBase.GetAllID(scmanager.User.id, "Busketed");
+        List<dbBook> liked = new List<dbBook>();
+        foreach (int i in idBook)
+        {
+            liked.Add(scmanager.DataBase.FindBook(i));
+        }
+        if (liked.Count > 0) scmanager.Buttons.panels[2].transform.Find("txt_None").gameObject.SetActive(false);
+        else scmanager.Buttons.panels[2].transform.Find("txt_None").gameObject.SetActive(true);
+        foreach (dbBook book in liked)
+        {
+
+            prefubBusketed.transform.Find("txt_Name").GetComponent<TMP_Text>().text = book.Name.Split('|')[0];
+            if (book.Tom > 0) prefubBusketed.transform.Find("txt_Name").GetComponent<TMP_Text>().text += " ТОМ " + book.Tom;
+            prefubBusketed.transform.Find("txt_Cost").GetComponent<TMP_Text>().text = book.Cost + " руб";
+            prefubBusketed.transform.Find("Image").GetComponent<Image>().sprite = Resources.Load<Sprite>("Book Image/" + book.Cover.ToString());
+
+            GameObject g = Instantiate(prefubBusketed, content.transform);
+            g.transform.Find("btn_Book").GetComponent<Button>().onClick.AddListener(() => { scmanager.Buttons.btn_BookOpen(book.id); });
+            g.transform.Find("btn_Delete").GetComponent<Button>().onClick.AddListener(() => { scmanager.Buttons.btn_DeleteFromBusket(book.id,g); });
+        }
+        recalculate_Summ();
+    }
+    public void recalculate_Summ()
+    {
+        List<dbBook> busketed = busketedBook();
+
+        float summ = 0;
+        foreach(dbBook book in busketed)
+        {
+            summ += book.Cost;
+        }
+        txt_Summ.text = "Стоимость "+summ.ToString()+" руб";
+        if (summ > 0) scmanager.Buttons.panels[2].transform.Find("txt_None").gameObject.SetActive(false);
+        else scmanager.Buttons.panels[2].transform.Find("txt_None").gameObject.SetActive(true);
+    }
+    public List<dbBook> busketedBook()
+    {
+        List<int> idBook = scmanager.DataBase.GetAllID(scmanager.User.id, "Busketed");
+        List<dbBook> busketed = new List<dbBook>();
+        foreach (int i in idBook)
+        {
+            busketed.Add(scmanager.DataBase.FindBook(i));
+        }
+        return busketed;
+    }
+
+    //BUY
+    public void Buying()
+    {
+        List<dbBook> busketed = busketedBook();
     }
 
 }
