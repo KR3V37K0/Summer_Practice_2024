@@ -7,6 +7,13 @@ using System.EnterpriseServices;
 using static Unity.Burst.Intrinsics.X86;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.Globalization;
+using System;
+using System.Threading;
+using UnityEngine.UIElements;
+
+//Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+//CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
 
 public class DataBaseSc : MonoBehaviour
 {
@@ -15,6 +22,11 @@ public class DataBaseSc : MonoBehaviour
     IDbConnection dbconn;
     IDbCommand dbcmd;
     IDataReader reader;
+    
+    private void Start()
+    {
+        Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+    }
     void OpenConnection()
     {
         dbconn = new SqliteConnection(conn);
@@ -101,6 +113,15 @@ public class DataBaseSc : MonoBehaviour
 
         CloseConnection();
     }
+    public void SetCard(int id, string card)
+    {
+        OpenConnection();
+        string sqlQuery = "UPDATE Users SET Card = '" + card + "' WHERE id = '" + id + "'";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        while (reader.Read()) { }
+        CloseConnection();
+    }
    
     //BOOKS
     public dbBook[] bookBest(int top)
@@ -117,9 +138,6 @@ public class DataBaseSc : MonoBehaviour
             
             if (i == b.Length) break;
             b[i] = new dbBook();
-            //Debug.Log(reader.GetInt32(0));
-            //Debug.Log(reader.GetString(20));
-            
             b[i].id=reader.GetInt32(0);
             b[i].Date = reader.GetString(1);
             b[i].Cover = reader.GetInt32(2);
@@ -230,6 +248,176 @@ public class DataBaseSc : MonoBehaviour
         CloseConnection();
     }
 
+    //ADRESS
+    public List<dbAdress> GetAllAdress()
+    {
+        List<dbAdress> adresses = new List<dbAdress>();
+        OpenConnection();
+        string sqlQuery = "Select id,Adress,Day FROM DeliveryPoints ORDER BY Adress";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+
+        while (reader.Read())
+        {
+            if (reader.GetInt32(0) > 0)
+            {
+                dbAdress adress = new dbAdress();
+                adress.id = reader.GetInt32(0);
+                adress.Adress = reader.GetString(1);
+                adress.Time = reader.GetInt32(2);
+                adresses.Add(adress);
+            }
+        }
+        CloseConnection();
+        return adresses;
+    }
+    public int AdressTime(int idAdress)
+    {
+        OpenConnection();
+        string sqlQuery = "Select Day FROM DeliveryPoints Where id="+idAdress;
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        int Time = 0;
+        while (reader.Read())
+        {
+            Time = reader.GetInt32(0);
+        }
+        CloseConnection();
+        return Time;
+    }
+    public string GetAdress(int idAdress)
+    {
+        OpenConnection();
+        string sqlQuery = "Select Adress FROM DeliveryPoints Where id=" + idAdress;
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        string adress = "";
+        while (reader.Read())
+        {
+            adress = reader.GetString(0);
+        }
+        CloseConnection();
+        return adress;
+    }
+
+    //BUYING
+    public void Buy(List<dbBook> books,string Date,string Adress,int idUser)
+    {
+        foreach(dbBook book in books)
+        {
+            OpenConnection();           
+            string sqlQuery = "INSERT INTO Buyed(idBook, idUser,Date_Buy,idAdress) VALUES(" + book.id + "," + idUser + ",'" + Date + "'," + Adress+ ")";
+            dbcmd.CommandText = sqlQuery;
+            reader = dbcmd.ExecuteReader();
+            while (reader.Read()) { }
+            CloseConnection();
+        }
+    }
+    public List<dbBuyed> GetAllBuyedID(int idUser)
+    {
+        List<dbBuyed> books = new List<dbBuyed>();
+        OpenConnection();
+        string sqlQuery = "Select id,idUser,idBook,Date_Buy,idAdress FROM Buyed Where idUser='" + idUser + "'";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+
+        while (reader.Read())
+        {
+            if (reader.GetInt32(0) > 0)
+            {
+                dbBuyed book = new dbBuyed();
+                book.id = reader.GetInt32(0);
+                book.idUser =reader.GetInt32(1);
+                book.idBook = reader.GetInt32(2);
+                book.DateBuy = reader.GetString(3);
+                book.idAdress = reader.GetInt32(4);
+                books.Add(book);
+            }
+        }
+        CloseConnection();
+        return books;
+    }
+
+    //RATYING
+    public void addRating(int idBook,int idUser,int Rating)
+    {
+        bool rate=isRate(idBook,idUser);
+        OpenConnection();
+        if (rate)
+        {
+            string sqlQuery = "UPDATE Rating SET Rating = '" + Rating + "' WHERE idUser = '" + idUser + "'" + " AND idBook=" + idBook;
+            dbcmd.CommandText = sqlQuery;
+            reader = dbcmd.ExecuteReader();
+            while (reader.Read()) { }
+        }
+        else
+        {
+            string sqlQuery = "INSERT INTO Rating(idBook, idUser,Rating) VALUES(" + idBook + "," + idUser + "," + Rating + ")";
+            dbcmd.CommandText = sqlQuery;
+            reader = dbcmd.ExecuteReader();
+            while (reader.Read()) { }
+        }
+        CloseConnection();
+        recalculateRating(idBook);
+    }
+    public bool isRate(int idBook, int idUser)
+    {
+        OpenConnection();
+        string sqlQuery = "Select idUser,idBook FROM Rating Where idUser='" + idUser + "'" + " AND idBook=" +idBook;
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+
+        while (reader.Read())
+        {
+            if (reader.GetInt32(0) > 0)
+            {
+                CloseConnection();
+                return true;
+            }
+        }
+        CloseConnection();
+        return false;
+    }
+    public void recalculateRating(int idBook)
+    {
+        OpenConnection();
+        string sqlQuery = "Select Rating FROM Rating Where idBook='" + idBook + "'";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        double count = 0;
+        double summRate = 0;
+
+        while (reader.Read())
+        {
+            count++;
+            summRate += reader.GetInt32(0);
+        }
+        CloseConnection();
+        double f = summRate / count;
+        OpenConnection();
+
+        sqlQuery = "UPDATE Books SET Rating = '" + f + "' WHERE id = '" + idBook + "'";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        while (reader.Read()) { }
+
+        CloseConnection();
+    }
+    public int GetRating(int idBook, int idUser)
+    {
+        int score = 0;
+        OpenConnection();
+        string sqlQuery = "Select Rating FROM Rating Where idUser='" + idUser + "'" + " AND idBook=" + idBook;
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+
+        while (reader.Read())
+        {
+            score= reader.GetInt32(0);
+        }
+        CloseConnection();
+        return score;
+    }
 }
 public class dbUser
 {
@@ -248,4 +436,18 @@ public class dbBook
     public float Rating;
 
 }
+public class dbAdress
+{
+    public int id;
+    public string Adress;
+    public int Time;
+}
+public class dbBuyed
+{
+    public int id;
+    public int idUser,idBook;
+    public string DateBuy;
+    public int idAdress;
+}
+
 

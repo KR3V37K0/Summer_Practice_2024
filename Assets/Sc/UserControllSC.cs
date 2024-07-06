@@ -38,7 +38,6 @@ public class UserControllSC : MonoBehaviour
     }
     public IEnumerator Check()
     {
-
         for(int x = 0; x < 100; x++) 
         {
             yield return new WaitForSeconds(1f);
@@ -46,6 +45,7 @@ public class UserControllSC : MonoBehaviour
             
         }
         ScManager.Buttons.btn_menuUSER();
+        ScManager.Buttons.btn_menuHOME();
 ;
     }
     public void CompleteEnter()

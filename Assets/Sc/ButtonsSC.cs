@@ -8,7 +8,8 @@ public class ButtonsSC : MonoBehaviour
 {
     [SerializeField] ScriptManager ScManager;
     public GameObject[] panels;
-    [SerializeField] GameObject reg_log, navigation,loadScreen;
+    public GameObject panel_Rating;
+    [SerializeField] GameObject reg_log, navigation,loadScreen,idBook_for_Rating;
     public Color colorLike, colorUnlike;
 
 
@@ -32,6 +33,7 @@ public class ButtonsSC : MonoBehaviour
             reg_log.transform.Find("__REGISTRATION").gameObject.SetActive(false);
         }
         loadScreen.SetActive(false);
+        
     }
     public void btn_OpenOnlyOne(int n)
     {
@@ -40,6 +42,7 @@ public class ButtonsSC : MonoBehaviour
             p.SetActive(false);
         }
         panels[n].SetActive(true);
+        panel_Rating.SetActive(false);
     }
 
 
@@ -116,6 +119,15 @@ public class ButtonsSC : MonoBehaviour
         navigation.SetActive(true);
         ScManager.Menu.menuUser(panels[4].GetComponent<Transform>());
     }
+    public void btn_clearInputs()
+    {
+        reg_log.transform.Find("__REGISTRATION/input_NAME").GetComponent<TMP_InputField>().text = null;
+        reg_log.transform.Find("__REGISTRATION/input_LOGIN").GetComponent<TMP_InputField>().text = null;
+        reg_log.transform.Find("__REGISTRATION/input_PASS").GetComponent<TMP_InputField>().text = null;
+
+        reg_log.transform.Find("__LOGIN/input_LOGIN").GetComponent<TMP_InputField>().text = null;
+        reg_log.transform.Find("__LOGIN/input_PASS").GetComponent<TMP_InputField>().text = null;
+    }
 
 
     //USER SETTINGS
@@ -175,6 +187,7 @@ public class ButtonsSC : MonoBehaviour
     //HOME
     public void btn_menuHOME()
     {
+        btn_OpenOnlyOne(0);
         if (panels[0].activeSelf==true) panels[0].transform.Find("scroll_Book").gameObject.SetActive(false);
         ScManager.Menu.menuHome();
         
@@ -199,6 +212,10 @@ public class ButtonsSC : MonoBehaviour
             but.transform.GetComponent<Image>().color = colorLike;
             ScManager.DataBase.AddBookTo(ScManager.Menu.book.id, ScManager.User.id,"Liked");          
         }
+    }
+    public void btn_FindByGenre(string genre)
+    {
+        Debug.Log("i find book by "+genre);
     }
 
 
@@ -236,8 +253,28 @@ public class ButtonsSC : MonoBehaviour
         ScManager.DataBase.DeleteBookFrom(idBook, ScManager.User.id, "Busketed");
         ScManager.Menu.recalculate_Summ();
     }
-    public void btn_Buy()
+    public void btn_Buy(TMP_Text text)
     {
-        Debug.Log("куплено");
+        if (text.text.ToString() == "Купить") { ScManager.Menu.Buy_Panel(); }
+        else { ScManager.Menu.Buying(); }
+    }
+
+    //DELIVERY
+    public void btn_menuDELIVERY()
+    {
+        btn_OpenOnlyOne(3);
+        ScManager.Menu.menuDELIVERY(panels[3].transform.Find("Scroll View/Viewport/Content").transform);
+    }
+    public void btn_OpenRank(int idBook)
+    {
+        panel_Rating.transform.GetChild(0).name = idBook.ToString();
+        panel_Rating.SetActive(true);
+
+    }
+    public void btn_Rank(int score)
+    {
+        ScManager.DataBase.addRating(int.Parse(idBook_for_Rating.name), ScManager.User.id, score);
+
+        btn_menuDELIVERY();
     }
 }
