@@ -11,6 +11,7 @@ using System.Globalization;
 using System;
 using System.Threading;
 using UnityEngine.UIElements;
+using Unity.VisualScripting;
 
 //Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 //CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
@@ -417,6 +418,137 @@ public class DataBaseSc : MonoBehaviour
         }
         CloseConnection();
         return score;
+    }
+
+    //SEARCH
+    public List<dbBook> easySearch(string txt)
+    {
+        OpenConnection();
+        string sqlQuery = "SELECT id,Date,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where Name LIKE '%" + txt + "%'";
+        //SELECT* FROM bus_station WHERE  bus_key_query LIKE '%2%';
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        List<dbBook> books = new List<dbBook>();
+        while (reader.Read())
+        {
+            if (reader.GetInt32(0) > 0)
+            {
+                dbBook b = new dbBook();
+                b.id = reader.GetInt32(0);
+                b.Date = reader.GetString(1);
+                b.Cover = reader.GetInt32(2);
+                b.Cost = reader.GetInt32(3);
+                b.Age = reader.GetInt32(4);
+                b.Tom = reader.GetInt32(5);
+                b.Name = reader.GetString(6);
+                b.Author = reader.GetString(7);
+                b.Provider = reader.GetString(8);
+                b.Description = reader.GetString(9);
+                b.Images = reader.GetString(10);
+                b.Genre = reader.GetString(11);
+                b.Rating = reader.GetFloat(12);
+                b.Series = reader.GetString(13);
+                books.Add(b);
+            }
+        }
+        CloseConnection();
+        return books;
+    }
+    public List<dbBook> Search(string txt)
+    {
+        List<dbBook> books = new List<dbBook>();
+        OpenConnection();
+        if (txt.Contains("::"))
+        {
+            string command = txt.Substring(0,txt.IndexOf("::"));
+            string contain = txt.Substring(txt.IndexOf("::")+2);
+            switch (command)
+            {
+                case "Æàíð":
+                    command = "Genre";
+                    break;
+                case "Àâòîð":
+                    command = "Author";
+                    break;
+            }
+
+            string sqlQuery = "SELECT id,Date,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where "+command+" LIKE '%" + contain + "%'";
+            //SELECT* FROM bus_station WHERE  bus_key_query LIKE '%2%';
+            dbcmd.CommandText = sqlQuery;
+            reader = dbcmd.ExecuteReader();
+            while (reader.Read())
+            {
+                if (reader.GetInt32(0) > 0)
+                {
+                    dbBook b = new dbBook();
+                    b.id = reader.GetInt32(0);
+                    b.Date = reader.GetString(1);
+                    b.Cover = reader.GetInt32(2);
+                    b.Cost = reader.GetInt32(3);
+                    b.Age = reader.GetInt32(4);
+                    b.Tom = reader.GetInt32(5);
+                    b.Name = reader.GetString(6);
+                    b.Author = reader.GetString(7);
+                    b.Provider = reader.GetString(8);
+                    b.Description = reader.GetString(9);
+                    b.Images = reader.GetString(10);
+                    b.Genre = reader.GetString(11);
+                    b.Rating = reader.GetFloat(12);
+                    b.Series = reader.GetString(13);
+                    books.Add(b);
+                }
+            }
+        }
+        else
+        {
+            string sqlQuery = "SELECT id,Date,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where Name LIKE '%" + txt + "%'";
+            //SELECT* FROM bus_station WHERE  bus_key_query LIKE '%2%';
+            dbcmd.CommandText = sqlQuery;
+            reader = dbcmd.ExecuteReader();
+            while (reader.Read())
+            {
+                if (reader.GetInt32(0) > 0)
+                {
+                    dbBook b = new dbBook();
+                    b.id = reader.GetInt32(0);
+                    b.Date = reader.GetString(1);
+                    b.Cover = reader.GetInt32(2);
+                    b.Cost = reader.GetInt32(3);
+                    b.Age = reader.GetInt32(4);
+                    b.Tom = reader.GetInt32(5);
+                    b.Name = reader.GetString(6);
+                    b.Author = reader.GetString(7);
+                    b.Provider = reader.GetString(8);
+                    b.Description = reader.GetString(9);
+                    b.Images = reader.GetString(10);
+                    b.Genre = reader.GetString(11);
+                    b.Rating = reader.GetFloat(12);
+                    b.Series = reader.GetString(13);
+                    books.Add(b);
+                }
+            }
+        }
+        CloseConnection();
+
+        return books;
+    }
+    public List<string> Get_Genres()
+    {
+        List<string> genres = new List<string>();
+        //SELECT DISTINCT company FROM products;
+        OpenConnection();
+        string sqlQuery = "SELECT DISTINCT Genre FROM Books";
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        while (reader.Read())
+        {
+            foreach(string s in reader.GetString(0).Split("|"))
+            {
+                genres.Add(s);
+            }       
+        }
+        CloseConnection();
+        return genres;
     }
 }
 public class dbUser

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +16,7 @@ public class ButtonsSC : MonoBehaviour
 
     private void Start()
     {
-        
+        prefubSearchEasyResult=Resources.Load<GameObject>("Prefubs/btn_varSearch");
         StartCoroutine(StartScreen());
     }
     //FOR ALL
@@ -188,7 +189,12 @@ public class ButtonsSC : MonoBehaviour
     public void btn_menuHOME()
     {
         btn_OpenOnlyOne(0);
-        if (panels[0].activeSelf==true) panels[0].transform.Find("scroll_Book").gameObject.SetActive(false);
+        if (panels[0].activeSelf == true) 
+        { 
+            panels[0].transform.Find("scroll_Book").gameObject.SetActive(false);
+            panels[0].transform.Find("Scroll Search").gameObject.SetActive(false);
+            panels[0].transform.Find("Scroll View").gameObject.SetActive(true);
+        }
         ScManager.Menu.menuHome();
         
 
@@ -215,7 +221,7 @@ public class ButtonsSC : MonoBehaviour
     }
     public void btn_FindByGenre(string genre)
     {
-        Debug.Log("i find book by "+genre);
+        OpenSearch("Æàíð::"+genre);
     }
 
 
@@ -276,5 +282,64 @@ public class ButtonsSC : MonoBehaviour
         ScManager.DataBase.addRating(int.Parse(idBook_for_Rating.name), ScManager.User.id, score);
 
         btn_menuDELIVERY();
+    }
+
+
+    //SEARCH
+    GameObject prefubSearchEasyResult;
+    [SerializeField] GameObject easySearchContent;
+    [SerializeField] TMP_Dropdown drop_genre;
+    [SerializeField] TMP_InputField input_author;
+    public void inp_change_SEARCH(TMP_InputField input)
+    {
+        foreach (Transform child in easySearchContent.GetComponentInChildren<Transform>())
+        {
+            if (child.gameObject.name != "Content") Destroy(child.gameObject);
+        }
+        if (input.text != "") 
+        { 
+            List<dbBook> books=(ScManager.DataBase.easySearch(input.text));
+            foreach (dbBook book in books)
+            {
+                prefubSearchEasyResult.transform.Find("txt").GetComponent<TMP_Text>().text = book.Name.Split("|")[0];
+                GameObject g= Instantiate(prefubSearchEasyResult, easySearchContent.transform);
+                g.GetComponent<Button>().onClick.AddListener(() => { OpenSearch(book.Name.Split("|")[0]); });
+            }
+        }
+    }
+    public void btn_EnterSearch(int mode)
+    {
+        if (mode==0) OpenSearch(navigation.transform.Find("panel_Up/input_Search").GetComponent<TMP_InputField>().text);
+        else
+        {
+            
+            string genre = drop_genre.options[drop_genre.value].text;
+            string author = input_author.text;
+            if (genre != " ") {  OpenSearch("Æàíð::" + genre); }
+            else if (author != null) OpenSearch("Àâòîð::" + author);
+        }
+    }
+    public void OpenSearch(string txt)
+    {
+        SearchDeselect();
+        navigation.transform.Find("panel_Up/input_Search").GetComponent<TMP_InputField>().text = txt;
+        List<dbBook> books = ScManager.DataBase.Search(txt);
+        btn_OpenOnlyOne(0);
+        panels[0].transform.Find("Scroll Search").gameObject.SetActive(true);
+        panels[0].transform.Find("Scroll View").gameObject.SetActive(false);
+        panels[0].transform.Find("scroll_Book").gameObject.SetActive(false);
+        ScManager.Menu.SearchResult(panels[0].transform.Find("Scroll Search/Viewport/Content"),books);     
+    }
+    public void SearchSelect()
+    {
+        easySearchContent.SetActive(true);
+    }
+    public void SearchDeselect()
+    {
+        easySearchContent.SetActive(false);
+    }
+    public void btn_BigSearch()
+    {
+        ScManager.Menu.panelBigSearch(panels[5].transform);
     }
 }

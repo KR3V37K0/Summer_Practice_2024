@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using UnityEditor;
 using static UnityEditor.Progress;
 using System;
+using UnityEngine.Analytics;
 
 public class MenusLoaderSC : MonoBehaviour
 {
@@ -329,4 +330,45 @@ public class MenusLoaderSC : MonoBehaviour
         g.transform.Find("btn_Book").GetComponent<Button>().onClick.AddListener(() => { scmanager.Buttons.btn_BookOpen(book.id); });
     }
 
+    //SEARCH
+    public void panelBigSearch(Transform content)
+    {
+        TMP_Dropdown drop=content.transform.Find("drop_genre").GetComponent<TMP_Dropdown>();
+        drop.ClearOptions();
+        List<string> genres = scmanager.DataBase.Get_Genres();
+        genres=unicue(genres);
+        drop.options.Add(new TMP_Dropdown.OptionData() { text = " " });
+        foreach (string genre in genres)
+        {
+            drop.options.Add(new TMP_Dropdown.OptionData() { text = genre });
+        }
+
+    }
+    List<string> unicue(List<string> orig)
+    {
+        List<string> list = new List<string>();
+        for(int x = 0; x < orig.Count; x++)
+        {
+            if(!(list.Contains(orig[x])))list.Add(orig[x]); 
+        }
+        list.Sort();
+        return list;
+    }
+    public void SearchResult(Transform content, List<dbBook> books)
+    {
+        foreach (Transform child in content.GetComponentInChildren<Transform>())
+        {
+            if (child.gameObject.name != "Content") Destroy(child.gameObject);
+        }
+        foreach (dbBook book in books)
+        {
+            prefubBook.transform.Find("txt_Name").GetComponent<TMP_Text>().text = book.Name.Split('|')[0] + " ÒÎÌ " + book.Tom;
+            prefubBook.transform.Find("txt_Cost").GetComponent<TMP_Text>().text = book.Cost + " ðóá";
+            prefubBook.transform.Find("Image").GetComponent<Image>().sprite = Resources.Load<Sprite>("Book Image/" + book.Cover.ToString());
+            prefubBook.GetComponent<Button>().onClick.RemoveAllListeners();
+
+            GameObject g = Instantiate(prefubBook, content.transform);
+            g.GetComponent<Button>().onClick.AddListener(() => { scmanager.Buttons.btn_BookOpen(book.id); });
+        }
+    }
 }
