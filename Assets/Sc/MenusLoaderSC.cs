@@ -23,7 +23,7 @@ public class MenusLoaderSC : MonoBehaviour
     //[SerializeField] GameObject btn_Book, scroll_Group;
     [SerializeField] bool booksLoaded = false;
     [SerializeField] int booksTop;
-    [SerializeField] GameObject prefubGroup,prefubBook,prefubLiked,prefubBusketed,prefubGenres,prefubDelivery, prefubDelivered;
+    [SerializeField] GameObject prefubGroup,prefubBook,prefubLiked,prefubBusketed,prefubGenres,prefubDelivery, prefubDelivered,prefubAva;
     [SerializeField] GameObject contentGroups, contentBooks;
     [SerializeField] Transform BookView;
     List<Sprite> images = new List<Sprite>();
@@ -37,6 +37,7 @@ public class MenusLoaderSC : MonoBehaviour
         prefubGenres = Resources.Load<GameObject>("Prefubs/btn_Genre");
         prefubDelivery = Resources.Load<GameObject>("Prefubs/panel_DeliveryBook");
         prefubDelivered = Resources.Load<GameObject>("Prefubs/panel_Delivered");
+        prefubAva = Resources.Load<GameObject>("Prefubs/Avatar_Changer 1");
 
         panel_Cost = scmanager.Buttons.panels[2].transform.Find("panel_Cost").gameObject;
         panel_Buy = scmanager.Buttons.panels[2].transform.Find("panel_Buy").gameObject;
@@ -49,7 +50,7 @@ public class MenusLoaderSC : MonoBehaviour
     }
 
     //USER
-    private Sprite FindAva(int id)
+    public Sprite FindAva(int id)
     {
         return Resources.Load<Sprite>("Avatars/" + id);
     }
@@ -111,7 +112,7 @@ public class MenusLoaderSC : MonoBehaviour
         if (l == -1) BookView.Find("txt_OtherNames").GetComponent<TMP_Text>().text = " ";
         else BookView.Find("txt_OtherNames").GetComponent<TMP_Text>().text = book.Name.Substring(book.Name.IndexOf('|') + 1);
         if (book.Tom>0) BookView.Find("txt_Name").GetComponent<TMP_Text>().text+=" ТОМ "+book.Tom;
-        BookView.Find("txt_Author").GetComponent<TMP_Text>().text = "Автор: "+book.Author;
+        BookView.Find("btn_Author/txt").GetComponent<TMP_Text>().text = book.Author;
         BookView.Find("txt_ProviderDate").GetComponent<TMP_Text>().text = book.Provider + " " + book.Date;
         BookView.Find("txt_Rating/Img_Rating").GetComponent<Image>().fillAmount = (float)book.Rating / 5f;
         BookView.Find("btn_toBusket/txt_Cost").GetComponent<TMP_Text>().text = "В корзину    " + book.Cost+" руб";

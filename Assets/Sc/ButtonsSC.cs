@@ -10,13 +10,14 @@ public class ButtonsSC : MonoBehaviour
     [SerializeField] ScriptManager ScManager;
     public GameObject[] panels;
     public GameObject panel_Rating;
-    [SerializeField] GameObject reg_log, navigation,loadScreen,idBook_for_Rating;
+    [SerializeField] GameObject reg_log, navigation,loadScreen,idBook_for_Rating, prefubAva;
     public Color colorLike, colorUnlike;
 
 
     private void Start()
     {
-        prefubSearchEasyResult=Resources.Load<GameObject>("Prefubs/btn_varSearch");
+        prefubAva = Resources.Load<GameObject>("Prefubs/Avatar_Changer 1");
+        prefubSearchEasyResult =Resources.Load<GameObject>("Prefubs/btn_varSearch");
         StartCoroutine(StartScreen());
     }
     //FOR ALL
@@ -132,7 +133,7 @@ public class ButtonsSC : MonoBehaviour
 
 
     //USER SETTINGS
-    [SerializeField] Transform content;
+    [SerializeField] Transform content,scroll_ava;
     public void btn_Settings()
     {
         content = panels[6].transform.Find("Scroll View/Viewport/Content");
@@ -171,11 +172,33 @@ public class ButtonsSC : MonoBehaviour
     }
     public void btn_ChangeAva() //empty
     {
+        scroll_ava= panels[4].transform.Find("panel_Settings/scroll_Ava").transform;
+        scroll_ava.gameObject.SetActive(true);
+        foreach (Transform child in scroll_ava.transform.Find("Viewport/Content").GetComponentInChildren<Transform>())
+        {
+            if (child.gameObject.name != "Content") Destroy(child.gameObject);
+        }
+        for (int x = 1; x < 14; x++)
+        {
+            prefubAva.transform.Find("Image").GetComponent<Image>().sprite = ScManager.Menu.FindAva(x);
+            prefubAva.GetComponent<Button>().onClick.RemoveAllListeners();
+            GameObject g= Instantiate(prefubAva, scroll_ava.transform.Find("Viewport/Content"));         
+            g.GetComponent<Button>().onClick.AddListener(() => { btn_AvaVar(g.transform.Find("Image").GetComponent<Image>().sprite.name); });
+        }
+    }
+    public void btn_AvaVar(string ava)
+    {
+        int id = int.Parse(ava);
+        
+        content.Find("Avatar/Image").GetComponent<Image>().sprite = ScManager.Menu.FindAva(id);
+        ScManager.User.Ava = id;
+        scroll_ava.gameObject.SetActive(false);
 
     }
     public void btn_DeleteAva()//empty
     {
-
+        content.Find("Avatar/Image").GetComponent<Image>().sprite=ScManager.Menu.FindAva(0);
+        ScManager.User.Ava = 0;
     }
     public void btn_DeleteAcc()
     {
@@ -222,6 +245,10 @@ public class ButtonsSC : MonoBehaviour
     public void btn_FindByGenre(string genre)
     {
         OpenSearch("Æàíð::"+genre);
+    }
+    public void btn_FindByAuthor(TMP_Text txt)
+    {
+        OpenSearch("Àâòîð::"+txt.text);
     }
 
 
