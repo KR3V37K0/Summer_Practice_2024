@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using UnityEditor;
-using static UnityEditor.Progress;
+//using static UnityEditor.Progress;
 using System;
 using UnityEngine.Analytics;
 
@@ -75,6 +75,8 @@ public class MenusLoaderSC : MonoBehaviour
             contentGroups = scmanager.Buttons.panels[0].transform.Find("Scroll View/Viewport/Content").gameObject;
             dbBook[] booksBest = scmanager.DataBase.bookBest(booksTop);
             CreateBookGroup(booksBest,"Лучшее");
+            dbBook[] booksNew = scmanager.DataBase.bookNew(booksTop);
+            CreateBookGroup(booksNew, "Новинки на сайте");
             booksLoaded = true;
         }
     }

@@ -159,6 +159,40 @@ public class DataBaseSc : MonoBehaviour
         CloseConnection();
         return b;
     }
+    public dbBook[] bookNew(int top)
+    {
+        OpenConnection();
+        string sqlQuery = "SELECT id,Date,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books ORDER BY id DESC";
+        //SELECT name, product_count FROM products ORDER BY product_count ASC
+        dbcmd.CommandText = sqlQuery;
+        reader = dbcmd.ExecuteReader();
+        dbBook[] b = new dbBook[top];
+        int i = 0;
+        while (reader.Read())
+        {
+
+            if (i == b.Length) break;
+            b[i] = new dbBook();
+            b[i].id = reader.GetInt32(0);
+            b[i].Date = reader.GetString(1);
+            b[i].Cover = reader.GetInt32(2);
+            b[i].Cost = reader.GetInt32(3);
+            b[i].Age = reader.GetInt32(4);
+            b[i].Tom = reader.GetInt32(5);
+            b[i].Name = reader.GetString(6);
+            b[i].Author = reader.GetString(7);
+            b[i].Provider = reader.GetString(8);
+            b[i].Description = reader.GetString(9);
+            b[i].Images = reader.GetString(10);
+            b[i].Genre = reader.GetString(11);
+            b[i].Rating = reader.GetFloat(12);
+            b[i].Series = reader.GetString(13);
+
+            i++;
+        }
+        CloseConnection();
+        return b;
+    }
     public dbBook FindBook(int id)
     {
         OpenConnection();

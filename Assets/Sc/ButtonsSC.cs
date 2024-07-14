@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class ButtonsSC : MonoBehaviour
 {
     [SerializeField] ScriptManager ScManager;
-    public GameObject[] panels;
+    public GameObject[] panels,buttons;
     public GameObject panel_Rating;
     [SerializeField] GameObject reg_log, navigation,loadScreen,idBook_for_Rating, prefubAva;
     public Color colorLike, colorUnlike;
@@ -41,7 +41,7 @@ public class ButtonsSC : MonoBehaviour
     {
         foreach (GameObject p in panels)
         {
-            p.SetActive(false);
+            p.SetActive(false);           
         }
         panels[n].SetActive(true);
         panel_Rating.SetActive(false);
