@@ -128,7 +128,7 @@ public class DataBaseSc : MonoBehaviour
     public dbBook[] bookBest(int top)
     {
         OpenConnection();
-        string sqlQuery = "SELECT id,Date,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books ORDER BY Rating DESC";
+        string sqlQuery = "SELECT id,day,month,year,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books ORDER BY Rating DESC";
         //SELECT name, product_count FROM products ORDER BY product_count ASC
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
@@ -140,19 +140,21 @@ public class DataBaseSc : MonoBehaviour
             if (i == b.Length) break;
             b[i] = new dbBook();
             b[i].id=reader.GetInt32(0);
-            b[i].Date = reader.GetString(1);
-            b[i].Cover = reader.GetInt32(2);
-            b[i].Cost = reader.GetInt32(3);
-            b[i].Age = reader.GetInt32(4);
-            b[i].Tom = reader.GetInt32(5);
-            b[i].Name = reader.GetString(6);
-            b[i].Author = reader.GetString(7);
-            b[i].Provider = reader.GetString(8);
-            b[i].Description = reader.GetString(9);
-            b[i].Images = reader.GetString(10);
-            b[i].Genre = reader.GetString(11);
-            b[i].Rating = reader.GetFloat(12);
-            b[i].Series = reader.GetString(13);
+            b[i].day = reader.GetInt32(1);
+            b[i].month = reader.GetInt32(2);
+            b[i].year = reader.GetInt32(3);
+            b[i].Cover = reader.GetInt32(4);
+            b[i].Cost = reader.GetInt32(5);
+            b[i].Age = reader.GetInt32(6);
+            b[i].Tom = reader.GetInt32(7);
+            b[i].Name = reader.GetString(8);
+            b[i].Author = reader.GetString(9);
+            b[i].Provider = reader.GetString(10);
+            b[i].Description = reader.GetString(11);
+            b[i].Images = reader.GetString(12);
+            b[i].Genre = reader.GetString(13);
+            b[i].Rating = reader.GetFloat(14);
+            b[i].Series = reader.GetString(15);
 
             i++;
         }        
@@ -161,8 +163,9 @@ public class DataBaseSc : MonoBehaviour
     }
     public dbBook[] bookNew(int top)
     {
+        //Debug.Log("start");
         OpenConnection();
-        string sqlQuery = "SELECT id,Date,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books ORDER BY id DESC";
+        string sqlQuery = "SELECT ID,day,month,year,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books ORDER BY year DESC,month DESC,day DESC";
         //SELECT name, product_count FROM products ORDER BY product_count ASC
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
@@ -170,33 +173,38 @@ public class DataBaseSc : MonoBehaviour
         int i = 0;
         while (reader.Read())
         {
-
-            if (i == b.Length) break;
+            //Debug.Log("work "+i);
+            //Debug.Log("length " + b.Length);
+            //Debug.Log(reader.GetInt32(0));
+            if (i == b.Length) {  break; }
             b[i] = new dbBook();
-            b[i].id = reader.GetInt32(0);
-            b[i].Date = reader.GetString(1);
-            b[i].Cover = reader.GetInt32(2);
-            b[i].Cost = reader.GetInt32(3);
-            b[i].Age = reader.GetInt32(4);
-            b[i].Tom = reader.GetInt32(5);
-            b[i].Name = reader.GetString(6);
-            b[i].Author = reader.GetString(7);
-            b[i].Provider = reader.GetString(8);
-            b[i].Description = reader.GetString(9);
-            b[i].Images = reader.GetString(10);
-            b[i].Genre = reader.GetString(11);
-            b[i].Rating = reader.GetFloat(12);
-            b[i].Series = reader.GetString(13);
-
+            b[i].id = reader.GetInt32(0);         
+            b[i].day = reader.GetInt32(1);
+            b[i].month = reader.GetInt32(2);
+            b[i].year = reader.GetInt32(3);
+            b[i].Cover = reader.GetInt32(4);
+            b[i].Cost = reader.GetInt32(5);
+            b[i].Age = reader.GetInt32(6);
+            b[i].Tom = reader.GetInt32(7);
+            b[i].Name = reader.GetString(8);
+            b[i].Author = reader.GetString(9);
+            b[i].Provider = reader.GetString(10);
+            b[i].Description = reader.GetString(11);
+            b[i].Images = reader.GetString(12);
+            b[i].Genre = reader.GetString(13);
+            b[i].Rating = reader.GetFloat(14);
+            b[i].Series = reader.GetString(15);
+            //Debug.Log("complete " + i);
             i++;
         }
         CloseConnection();
+        //Debug.Log("close " + i);
         return b;
     }
     public dbBook FindBook(int id)
     {
         OpenConnection();
-        string sqlQuery = "SELECT id,Date,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where id='" + id + "'";
+        string sqlQuery = "SELECT id,day,month,year,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where id='" + id + "'";
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
         dbBook b = new dbBook();
@@ -205,19 +213,21 @@ public class DataBaseSc : MonoBehaviour
             if (reader.GetInt32(0) > 0)
             {
                 b.id = reader.GetInt32(0);
-                b.Date = reader.GetString(1);
-                b.Cover = reader.GetInt32(2);
-                b.Cost = reader.GetInt32(3);
-                b.Age = reader.GetInt32(4);
-                b.Tom = reader.GetInt32(5);
-                b.Name = reader.GetString(6);
-                b.Author = reader.GetString(7);
-                b.Provider = reader.GetString(8);
-                b.Description = reader.GetString(9);
-                b.Images = reader.GetString(10);
-                b.Genre = reader.GetString(11);
-                b.Rating = reader.GetFloat(12);
-                b.Series = reader.GetString(13);
+                b.day = reader.GetInt32(1);
+                b.month = reader.GetInt32(2);
+                b.year = reader.GetInt32(3);
+                b.Cover = reader.GetInt32(4);
+                b.Cost = reader.GetInt32(5);
+                b.Age = reader.GetInt32(6);
+                b.Tom = reader.GetInt32(7);
+                b.Name = reader.GetString(8);
+                b.Author = reader.GetString(9);
+                b.Provider = reader.GetString(10);
+                b.Description = reader.GetString(11);
+                b.Images = reader.GetString(12);
+                b.Genre = reader.GetString(13);
+                b.Rating = reader.GetFloat(14);
+                b.Series = reader.GetString(15);
 
             }
         }
@@ -336,12 +346,12 @@ public class DataBaseSc : MonoBehaviour
     }
 
     //BUYING
-    public void Buy(List<dbBook> books,string Date,string Adress,int idUser)
+    public void Buy(List<dbBook> books,int day, int month, int year, string Adress,int idUser)
     {
         foreach(dbBook book in books)
         {
             OpenConnection();           
-            string sqlQuery = "INSERT INTO Buyed(idBook, idUser,Date_Buy,idAdress) VALUES(" + book.id + "," + idUser + ",'" + Date + "'," + Adress+ ")";
+            string sqlQuery = "INSERT INTO Buyed(idBook, idUser,day,month,year,idAdress) VALUES(" + book.id + "," + idUser + "," + day + "," + month + "," + year + "," + Adress+ ")";
             dbcmd.CommandText = sqlQuery;
             reader = dbcmd.ExecuteReader();
             while (reader.Read()) { }
@@ -352,7 +362,7 @@ public class DataBaseSc : MonoBehaviour
     {
         List<dbBuyed> books = new List<dbBuyed>();
         OpenConnection();
-        string sqlQuery = "Select id,idUser,idBook,Date_Buy,idAdress FROM Buyed Where idUser='" + idUser + "'";
+        string sqlQuery = "Select id,idUser,idBook,day,month,year,idAdress FROM Buyed Where idUser='" + idUser + "'";
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
 
@@ -364,8 +374,10 @@ public class DataBaseSc : MonoBehaviour
                 book.id = reader.GetInt32(0);
                 book.idUser =reader.GetInt32(1);
                 book.idBook = reader.GetInt32(2);
-                book.DateBuy = reader.GetString(3);
-                book.idAdress = reader.GetInt32(4);
+                book.day = reader.GetInt32(3);
+                book.month = reader.GetInt32(4);
+                book.year = reader.GetInt32(5);
+                book.idAdress = reader.GetInt32(6);
                 books.Add(book);
             }
         }
@@ -458,7 +470,7 @@ public class DataBaseSc : MonoBehaviour
     public List<dbBook> easySearch(string txt)
     {
         OpenConnection();
-        string sqlQuery = "SELECT id,Date,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where Name LIKE '%" + txt + "%'";
+        string sqlQuery = "SELECT id,day,month,year,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where Name LIKE '%" + txt + "%'";
         //SELECT* FROM bus_station WHERE  bus_key_query LIKE '%2%';
         dbcmd.CommandText = sqlQuery;
         reader = dbcmd.ExecuteReader();
@@ -469,19 +481,21 @@ public class DataBaseSc : MonoBehaviour
             {
                 dbBook b = new dbBook();
                 b.id = reader.GetInt32(0);
-                b.Date = reader.GetString(1);
-                b.Cover = reader.GetInt32(2);
-                b.Cost = reader.GetInt32(3);
-                b.Age = reader.GetInt32(4);
-                b.Tom = reader.GetInt32(5);
-                b.Name = reader.GetString(6);
-                b.Author = reader.GetString(7);
-                b.Provider = reader.GetString(8);
-                b.Description = reader.GetString(9);
-                b.Images = reader.GetString(10);
-                b.Genre = reader.GetString(11);
-                b.Rating = reader.GetFloat(12);
-                b.Series = reader.GetString(13);
+                b.day = reader.GetInt32(1);
+                b.month = reader.GetInt32(2);
+                b.year = reader.GetInt32(3);
+                b.Cover = reader.GetInt32(4);
+                b.Cost = reader.GetInt32(5);
+                b.Age = reader.GetInt32(6);
+                b.Tom = reader.GetInt32(7);
+                b.Name = reader.GetString(8);
+                b.Author = reader.GetString(9);
+                b.Provider = reader.GetString(10);
+                b.Description = reader.GetString(11);
+                b.Images = reader.GetString(12);
+                b.Genre = reader.GetString(13);
+                b.Rating = reader.GetFloat(14);
+                b.Series = reader.GetString(15);
                 books.Add(b);
             }
         }
@@ -506,7 +520,7 @@ public class DataBaseSc : MonoBehaviour
                     break;
             }
 
-            string sqlQuery = "SELECT id,Date,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where "+command+" LIKE '%" + contain + "%'";
+            string sqlQuery = "SELECT id,day,month,year,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where " + command+" LIKE '%" + contain + "%'";
             //SELECT* FROM bus_station WHERE  bus_key_query LIKE '%2%';
             dbcmd.CommandText = sqlQuery;
             reader = dbcmd.ExecuteReader();
@@ -516,26 +530,28 @@ public class DataBaseSc : MonoBehaviour
                 {
                     dbBook b = new dbBook();
                     b.id = reader.GetInt32(0);
-                    b.Date = reader.GetString(1);
-                    b.Cover = reader.GetInt32(2);
-                    b.Cost = reader.GetInt32(3);
-                    b.Age = reader.GetInt32(4);
-                    b.Tom = reader.GetInt32(5);
-                    b.Name = reader.GetString(6);
-                    b.Author = reader.GetString(7);
-                    b.Provider = reader.GetString(8);
-                    b.Description = reader.GetString(9);
-                    b.Images = reader.GetString(10);
-                    b.Genre = reader.GetString(11);
-                    b.Rating = reader.GetFloat(12);
-                    b.Series = reader.GetString(13);
+                    b.day = reader.GetInt32(1);
+                    b.month = reader.GetInt32(2);
+                    b.year = reader.GetInt32(3);
+                    b.Cover = reader.GetInt32(4);
+                    b.Cost = reader.GetInt32(5);
+                    b.Age = reader.GetInt32(6);
+                    b.Tom = reader.GetInt32(7);
+                    b.Name = reader.GetString(8);
+                    b.Author = reader.GetString(9);
+                    b.Provider = reader.GetString(10);
+                    b.Description = reader.GetString(11);
+                    b.Images = reader.GetString(12);
+                    b.Genre = reader.GetString(13);
+                    b.Rating = reader.GetFloat(14);
+                    b.Series = reader.GetString(15);
                     books.Add(b);
                 }
             }
         }
         else
         {
-            string sqlQuery = "SELECT id,Date,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where Name LIKE '%" + txt + "%'";
+            string sqlQuery = "SELECT id,day,month,year,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where Name LIKE '%" + txt + "%'";
             //SELECT* FROM bus_station WHERE  bus_key_query LIKE '%2%';
             dbcmd.CommandText = sqlQuery;
             reader = dbcmd.ExecuteReader();
@@ -545,19 +561,21 @@ public class DataBaseSc : MonoBehaviour
                 {
                     dbBook b = new dbBook();
                     b.id = reader.GetInt32(0);
-                    b.Date = reader.GetString(1);
-                    b.Cover = reader.GetInt32(2);
-                    b.Cost = reader.GetInt32(3);
-                    b.Age = reader.GetInt32(4);
-                    b.Tom = reader.GetInt32(5);
-                    b.Name = reader.GetString(6);
-                    b.Author = reader.GetString(7);
-                    b.Provider = reader.GetString(8);
-                    b.Description = reader.GetString(9);
-                    b.Images = reader.GetString(10);
-                    b.Genre = reader.GetString(11);
-                    b.Rating = reader.GetFloat(12);
-                    b.Series = reader.GetString(13);
+                    b.day = reader.GetInt32(1);
+                    b.month = reader.GetInt32(2);
+                    b.year = reader.GetInt32(3);
+                    b.Cover = reader.GetInt32(4);
+                    b.Cost = reader.GetInt32(5);
+                    b.Age = reader.GetInt32(6);
+                    b.Tom = reader.GetInt32(7);
+                    b.Name = reader.GetString(8);
+                    b.Author = reader.GetString(9);
+                    b.Provider = reader.GetString(10);
+                    b.Description = reader.GetString(11);
+                    b.Images = reader.GetString(12);
+                    b.Genre = reader.GetString(13);
+                    b.Rating = reader.GetFloat(14);
+                    b.Series = reader.GetString(15);
                     books.Add(b);
                 }
             }
@@ -597,8 +615,8 @@ public class dbUser
 }
 public class dbBook
 {
-    public int id, Cover, Cost, Age, Tom;
-    public string Name, Author, Provider, Description, Images, Genre, Date,Series;
+    public int id, Cover, Cost, Age, Tom,day,month,year;
+    public string Name, Author, Provider, Description, Images, Genre,Series;
     public float Rating;
 
 }
@@ -612,7 +630,7 @@ public class dbBuyed
 {
     public int id;
     public int idUser,idBook;
-    public string DateBuy;
+    public int day, month, year;
     public int idAdress;
 }
 

@@ -76,7 +76,7 @@ public class MenusLoaderSC : MonoBehaviour
             dbBook[] booksBest = scmanager.DataBase.bookBest(booksTop);
             CreateBookGroup(booksBest,"Лучшее");
             dbBook[] booksNew = scmanager.DataBase.bookNew(booksTop);
-            CreateBookGroup(booksNew, "Новинки на сайте");
+            CreateBookGroup(booksNew, "Новинки");
             booksLoaded = true;
         }
     }
@@ -115,7 +115,7 @@ public class MenusLoaderSC : MonoBehaviour
         else BookView.Find("txt_OtherNames").GetComponent<TMP_Text>().text = book.Name.Substring(book.Name.IndexOf('|') + 1);
         if (book.Tom>0) BookView.Find("txt_Name").GetComponent<TMP_Text>().text+=" ТОМ "+book.Tom;
         BookView.Find("btn_Author/txt").GetComponent<TMP_Text>().text = book.Author;
-        BookView.Find("txt_ProviderDate").GetComponent<TMP_Text>().text = book.Provider + " " + book.Date;
+        BookView.Find("txt_ProviderDate").GetComponent<TMP_Text>().text = book.Provider + " " + book.day+"." + book.month + "." + book.year;
         BookView.Find("txt_Rating/Img_Rating").GetComponent<Image>().fillAmount = (float)book.Rating / 5f;
         BookView.Find("btn_toBusket/txt_Cost").GetComponent<TMP_Text>().text = "В корзину    " + book.Cost+" руб";
         BookView.Find("btn_toBusket").GetComponent<Button>().onClick.RemoveAllListeners();
@@ -273,7 +273,7 @@ public class MenusLoaderSC : MonoBehaviour
     public void Buying()
     { 
         List<dbBook> busketed = busketedBook();
-        scmanager.DataBase.Buy(busketed, System.DateTime.Now.ToShortDateString(), drop_Adress.options[drop_Adress.value].text.Split(".")[0], scmanager.User.id);
+        scmanager.DataBase.Buy(busketed, System.DateTime.Now.Day, System.DateTime.Now.Month, System.DateTime.Now.Year, drop_Adress.options[drop_Adress.value].text.Split(".")[0], scmanager.User.id);
         scmanager.DataBase.SetCard(scmanager.User.id, panel_Buy.transform.Find("input_Card").GetComponent<TMP_InputField>().text.ToString());
         foreach (dbBook book in busketed)
         {
@@ -300,8 +300,9 @@ public class MenusLoaderSC : MonoBehaviour
         }
         for (int i =0;i<Buyed.Count;i++)
         {
-            DateTime date = System.DateTime.Parse(Buyed[i].DateBuy);          
-            date=date.AddDays(scmanager.DataBase.AdressTime(Buyed[i].idAdress));       
+            //DateTime date = System.DateTime.Parse(Buyed[i].DateBuy);
+            DateTime date = System.DateTime.Parse(new String(Buyed[i].day+"."+ Buyed[i].month+"."+ Buyed[i].year)); 
+            date = date.AddDays(scmanager.DataBase.AdressTime(Buyed[i].idAdress));       
             if (date <= DateTime.Today) Delivered(content, Books[i], Buyed[i],date);
             else inProgress(content, Books[i], Buyed[i],date);
 

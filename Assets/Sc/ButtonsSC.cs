@@ -291,6 +291,25 @@ public class ButtonsSC : MonoBehaviour
         if (text.text.ToString() == "Купить") { ScManager.Menu.Buy_Panel(); }
         else { ScManager.Menu.Buying(); }
     }
+    public void dropChange_adress(TMP_Dropdown drop)
+    {
+        int id = int.Parse( drop.options[drop.value].text.Split(".")[0]);
+        int wait =ScManager.DataBase.AdressTime(id);
+        string s = "";
+        switch (wait)
+        {
+            case 0:
+            s = "сегодня";
+            break;
+            case 1: 
+            s = "завтра";
+            break;
+            default:
+            s = System.DateTime.Now.AddDays(wait).ToString("dd MMMM yyyy)");
+            break;
+        }
+        panels[2].transform.Find("panel_Buy/txt_when").GetComponent<TMP_Text>().text = "Доставка будет " + s;
+    }
 
     //DELIVERY
     public void btn_menuDELIVERY()
