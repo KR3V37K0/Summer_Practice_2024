@@ -305,7 +305,7 @@ public class ButtonsSC : MonoBehaviour
             s = "завтра";
             break;
             default:
-            s = System.DateTime.Now.AddDays(wait).ToString("dd MMMM yyyy)");
+            s = System.DateTime.Now.AddDays(wait).ToString("dd MMMM yyyy");
             break;
         }
         panels[2].transform.Find("panel_Buy/txt_when").GetComponent<TMP_Text>().text = "Доставка будет " + s;
@@ -344,12 +344,12 @@ public class ButtonsSC : MonoBehaviour
         }
         if (input.text != "") 
         { 
-            List<dbBook> books=(ScManager.DataBase.easySearch(input.text));
-            foreach (dbBook book in books)
+            List<string> books=(ScManager.DataBase.easySearch(input.text));
+            foreach (string book in books)
             {
-                prefubSearchEasyResult.transform.Find("txt").GetComponent<TMP_Text>().text = book.Name.Split("|")[0];
+                prefubSearchEasyResult.transform.Find("txt").GetComponent<TMP_Text>().text = book.Split("|")[0];
                 GameObject g= Instantiate(prefubSearchEasyResult, easySearchContent.transform);
-                g.GetComponent<Button>().onClick.AddListener(() => { OpenSearch(book.Name.Split("|")[0]); });
+                g.GetComponent<Button>().onClick.AddListener(() => { OpenSearch(book.Split("|")[0]); });
             }
         }
     }

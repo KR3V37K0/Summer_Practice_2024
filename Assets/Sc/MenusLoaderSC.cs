@@ -301,7 +301,7 @@ public class MenusLoaderSC : MonoBehaviour
         for (int i =0;i<Buyed.Count;i++)
         {
             //DateTime date = System.DateTime.Parse(Buyed[i].DateBuy);
-            DateTime date = System.DateTime.Parse(new String(Buyed[i].day+"."+ Buyed[i].month+"."+ Buyed[i].year)); 
+            DateTime date = new DateTime(Buyed[i].year, Buyed[i].month, Buyed[i].day);//Buyed[i].day+"."+ Buyed[i].month+"."+ Buyed[i].year); 
             date = date.AddDays(scmanager.DataBase.AdressTime(Buyed[i].idAdress));       
             if (date <= DateTime.Today) Delivered(content, Books[i], Buyed[i],date);
             else inProgress(content, Books[i], Buyed[i],date);

@@ -467,7 +467,7 @@ public class DataBaseSc : MonoBehaviour
     }
 
     //SEARCH
-    public List<dbBook> easySearch(string txt)
+    public List<string> easySearch(string txt)
     {
         OpenConnection();
         string sqlQuery = "SELECT id,day,month,year,Cover,Cost,Age,Tom,Name,Author,Provider,Description,Images,Genre,Rating,Series FROM Books Where Name LIKE '%" + txt + "%'";
@@ -500,7 +500,8 @@ public class DataBaseSc : MonoBehaviour
             }
         }
         CloseConnection();
-        return books;
+        List<string> list = unicue(books);
+        return list;
     }
     public List<dbBook> Search(string txt)
     {
@@ -601,6 +602,16 @@ public class DataBaseSc : MonoBehaviour
         }
         CloseConnection();
         return genres;
+    }
+    List<string> unicue(List<dbBook> orig)
+    {
+        List<string> list = new List<string>();
+        for (int x = 0; x < orig.Count; x++)
+        {
+            if (!(list.Contains(orig[x].Name))) list.Add(orig[x].Name);
+        }
+        list.Sort();
+        return list;
     }
 }
 public class dbUser
